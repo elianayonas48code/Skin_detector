@@ -1,0 +1,20 @@
+# Dataset - keep on Google Drive
+dataset/
+ham10000/
+*.zip
+
+# Python virtual environments
+.venv/
+.venv312/
+venv/
+
+# PyCharm settings
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db

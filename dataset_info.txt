@@ -1,0 +1,37 @@
+HAM10000 Dataset Information
+
+Total images: 10,015
+
+Number of classes: 7
+
+Classes:
+1. akiec
+2. bcc
+3. bkl
+4. df
+5. mel
+6. nv
+7. vasc
+
+Image format: JPG
+Image input size: 224 x 224
+Color format: RGB
+
+Dataset split:
+Training: 70%
+Validation: 15%
+Testing: 15%
+
+Training images: 7,010
+Validation images: 1,502
+Testing images: 1,503
+
+Missing images: 0
+Bad/corrupt images: 0
+
+The dataset was split using stratified sampling
+so that each class is represented in the
+training, validation, and testing sets.
+
+The original HAM10000 images were kept separately
+from the organized dataset.
