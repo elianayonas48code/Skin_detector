@@ -1,6 +1,6 @@
 from pathlib import Path
 
-DATASET = Path("dataset")
+DATASET = Path("../dataset")
 
 CLASSES = [
     "akiec",

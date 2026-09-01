@@ -1,11 +1,11 @@
 import pandas as pd
 from pathlib import Path
 
-metadata_path = Path("ham10000/HAM10000_metadata.csv")
+metadata_path = Path("../ham10000/HAM10000_metadata.csv")
 
 image_folders = [
-    Path("ham10000/HAM10000_images_part_1"),
-    Path("ham10000/HAM10000_images_part_2")
+    Path("../ham10000/HAM10000_images_part_1"),
+    Path("../ham10000/HAM10000_images_part_2")
 ]
 
 df = pd.read_csv(metadata_path)

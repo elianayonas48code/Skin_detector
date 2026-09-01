@@ -3,7 +3,7 @@ from PIL import Image
 import random
 
 # Where our dataset is located
-DATASET = Path("dataset")
+DATASET = Path("../dataset")
 
 # Our 7 HAM10000 classes
 CLASSES = [

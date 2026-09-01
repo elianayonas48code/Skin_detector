@@ -1,7 +1,7 @@
 from pathlib import Path
 from PIL import Image
 
-DATASET_DIR = Path("dataset")
+DATASET_DIR = Path("../dataset")
 
 splits = ["train", "validation", "test"]
 
