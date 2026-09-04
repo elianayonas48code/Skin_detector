@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import os
 
 from model.predict import load_model, predict_image
@@ -13,8 +13,9 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-# Load the CNN model once when the app starts
+# Load the CNN model once when the application starts
 print("Loading CNN model...")
+
 model = load_model()
 
 
@@ -31,14 +32,21 @@ def detect():
 @app.route("/predict", methods=["POST"])
 def predict():
 
+    # Check if an image was uploaded
     if "image" not in request.files:
-        return "No image uploaded", 400
+        return jsonify({
+            "error": "No image uploaded."
+        }), 400
 
     image = request.files["image"]
 
+    # Check if a file was actually selected
     if image.filename == "":
-        return "No image selected", 400
+        return jsonify({
+            "error": "No image selected."
+        }), 400
 
+    # Save uploaded image
     image_path = os.path.join(
         app.config["UPLOAD_FOLDER"],
         image.filename
@@ -48,20 +56,22 @@ def predict():
 
     try:
 
+        # Run CNN prediction
         result = predict_image(
             model,
             image_path
         )
 
-        return render_template(
-            "result.html",
-            result=result,
-            image_path=image_path
-        )
+        # Send prediction back to detect.html
+        return jsonify(result)
 
     except Exception as error:
 
-        return f"Prediction error: {error}", 500
+        print("Prediction error:", error)
+
+        return jsonify({
+            "error": str(error)
+        }), 500
 
 
 if __name__ == "__main__":
