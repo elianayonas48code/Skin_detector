@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import os
 
-MODEL_PATH = "models/skin_cancer_cnn_original.keras"
+MODEL_PATH = "model/skin_cancer_cnn_original.keras"
 
 IMG_SIZE = (224, 224)
 
