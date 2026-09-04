@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}NEBIR AI | Skin Disease Detection{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="hero-tag">AI-POWERED HEALTH TECHNOLOGY</p>
+
+        <h1>
+            AI-Powered Skin
+            <span>Disease Detection</span>
+        </h1>
+
+        <p class="hero-description">
+            NEBIR AI uses artificial intelligence to analyze
+            skin images and provide a prediction across
+            seven skin-disease categories.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/detect" class="btn btn-primary">
+                Analyze Skin Image
+            </a>
+
+            <a href="/how-it-works" class="btn btn-secondary">
+                How It Works
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- AI Visual -->
+    <div class="hero-visual">
+
+        <div class="scan-card">
+
+            <div class="scan-icon">
+                AI
+            </div>
+
+            <div class="scan-line"></div>
+
+            <h3>NEBIR AI</h3>
+
+            <p>Ready to analyze</p>
+
+            <div class="status">
+                <span></span>
+                AI SYSTEM READY
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- How It Works Preview -->
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="section-tag">HOW IT WORKS</p>
+
+        <h2>
+            Simple. Fast. AI-Powered.
+        </h2>
+
+        <p>
+            Analyze a skin image in a few simple steps.
+        </p>
+
+    </div>
+
+
+    <div class="steps">
+
+        <div class="step-card">
+            <div class="step-number">01</div>
+            <h3>Upload</h3>
+            <p>
+                Upload or capture a skin image
+                using your device.
+            </p>
+        </div>
+
+
+        <div class="step-card">
+            <div class="step-number">02</div>
+            <h3>Analyze</h3>
+            <p>
+                Our CNN model analyzes the
+                submitted image.
+            </p>
+        </div>
+
+
+        <div class="step-card">
+            <div class="step-number">03</div>
+            <h3>Result</h3>
+            <p>
+                Receive an AI prediction and
+                confidence score.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Seven Classes -->
+<section class="section classes-section">
+
+    <div class="section-heading">
+
+        <p class="section-tag">AI MODEL</p>
+
+        <h2>
+            Seven Skin Categories
+        </h2>
+
+        <p>
+            The NEBIR AI model is designed to classify
+            images into seven categories.
+        </p>
+
+    </div>
+
+
+    <div class="classes-grid">
+
+        <div class="class-card">
+            <strong>AKIEC</strong>
+            <span>Actinic Keratoses</span>
+        </div>
+
+        <div class="class-card">
+            <strong>BCC</strong>
+            <span>Basal Cell Carcinoma</span>
+        </div>
+
+        <div class="class-card">
+            <strong>BKL</strong>
+            <span>Benign Keratosis</span>
+        </div>
+
+        <div class="class-card">
+            <strong>DF</strong>
+            <span>Dermatofibroma</span>
+        </div>
+
+        <div class="class-card">
+            <strong>MEL</strong>
+            <span>Melanoma</span>
+        </div>
+
+        <div class="class-card">
+            <strong>NV</strong>
+            <span>Melanocytic Nevi</span>
+        </div>
+
+        <div class="class-card">
+            <strong>VASC</strong>
+            <span>Vascular Lesion</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- About NEBIR AI -->
+<section class="about-preview">
+
+    <div>
+
+        <p class="section-tag">ABOUT NEBIR AI</p>
+
+        <h2>
+            Technology Supporting
+            Skin Health Awareness
+        </h2>
+
+        <p>
+            NEBIR AI is an educational AI project that
+            explores how computer vision and deep learning
+            can be used to analyze skin images.
+        </p>
+
+        <a href="/about" class="text-link">
+            Learn more about NEBIR AI →
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- Medical Disclaimer -->
+<section class="disclaimer-box">
+
+    <div class="disclaimer-icon">!</div>
+
+    <div>
+
+        <h3>Important Medical Notice</h3>
+
+        <p>
+            NEBIR AI provides an AI-based prediction for
+            educational and research purposes. It is not a
+            medical diagnosis and should not replace advice
+            from a qualified healthcare professional.
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}

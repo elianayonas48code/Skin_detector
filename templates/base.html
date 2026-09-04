@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}NEBIR AI{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <span>NEBIR</span>
+            <small>AI</small>
+        </div>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/detect">Detect Skin</a>
+            <a href="/about">About</a>
+            <a href="/how-it-works">How It Works</a>
+        </nav>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <div class="footer-logo">
+            NEBIR AI
+        </div>
+
+        <p>
+            AI-powered skin disease detection
+            for educational and research purposes.
+        </p>
+
+        <p class="disclaimer">
+            ⚠️ This AI result is not a medical diagnosis.
+            Please consult a qualified healthcare professional
+            for medical advice.
+        </p>
+
+        <p class="copyright">
+            © 2026 NEBIR AI. All rights reserved.
+        </p>
+
+    </footer>
+
+</body>
+</html>
