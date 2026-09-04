@@ -1,8 +1,10 @@
 import tensorflow as tf
 import numpy as np
-from PIL import Image
+import sys
+import os
 
-MODEL_PATH = "model/skin_cancer_cnn_original.keras"
+MODEL_PATH = "models/skin_cancer_cnn_original.keras"
+
 IMG_SIZE = (224, 224)
 
 CLASS_NAMES = [
@@ -15,34 +17,169 @@ CLASS_NAMES = [
     "vasc"
 ]
 
-print("Loading CNN model...")
-model = tf.keras.models.load_model(MODEL_PATH)
-print("CNN model loaded successfully.")
+CLASS_LABELS = {
+    "akiec": "Actinic Keratoses",
+    "bcc": "Basal Cell Carcinoma",
+    "bkl": "Benign Keratosis",
+    "df": "Dermatofibroma",
+    "mel": "Melanoma",
+    "nv": "Melanocytic Nevi",
+    "vasc": "Vascular Lesions"
+}
+
+ADVICE = {
+    "akiec": (
+        "Protect your skin from excessive sun exposure and use "
+        "sunscreen. Consider having the lesion assessed by a "
+        "qualified healthcare professional."
+    ),
+
+    "bcc": (
+        "Protect your skin from excessive sun exposure and monitor "
+        "the area for changes. Suspicious or changing lesions should "
+        "be assessed by a qualified healthcare professional."
+    ),
+
+    "bkl": (
+        "Continue monitoring the area for changes in size, shape, "
+        "color, or symptoms. If it changes or concerns you, consult "
+        "a qualified healthcare professional."
+    ),
+
+    "df": (
+        "Monitor the area for changes in appearance, size, or "
+        "symptoms. If you are concerned about the lesion, seek "
+        "professional medical advice."
+    ),
+
+    "mel": (
+        "This prediction should be taken seriously. The lesion should "
+        "be assessed by a qualified healthcare professional. Do not "
+        "rely on the AI prediction alone."
+    ),
+
+    "nv": (
+        "Continue monitoring the area for changes in size, shape, "
+        "color, or appearance. If you notice significant changes or "
+        "have concerns, consult a qualified healthcare professional."
+    ),
+
+    "vasc": (
+        "Monitor the area for changes. If the lesion is changing, "
+        "painful, bleeding, or concerning, seek advice from a "
+        "qualified healthcare professional."
+    )
+}
 
 
-def predict_skin_image(image_path):
-    image = Image.open(image_path).convert("RGB")
-    image = image.resize(IMG_SIZE)
+def load_model():
+    print("Loading CNN model...")
 
-    image_array = np.array(image, dtype=np.float32)
-    image_array = image_array / 255.0
-    image_array = np.expand_dims(image_array, axis=0)
+    model = tf.keras.models.load_model(MODEL_PATH)
 
-    predictions = model.predict(image_array, verbose=0)[0]
+    print("Model loaded successfully.")
+
+    return model
+
+
+def predict_image(model, image_path):
+
+    if not os.path.exists(image_path):
+        print()
+        print("Image not found:")
+        print(image_path)
+        return
+
+    image = tf.keras.utils.load_img(
+        image_path,
+        target_size=IMG_SIZE
+    )
+
+    image_array = tf.keras.utils.img_to_array(image)
+
+    image_array = tf.expand_dims(
+        image_array,
+        axis=0
+    )
+
+    predictions = model.predict(
+        image_array,
+        verbose=0
+    )[0]
 
     predicted_index = np.argmax(predictions)
-    predicted_class = CLASS_NAMES[predicted_index]
-    confidence = float(predictions[predicted_index])
 
-    return {
-        "class": predicted_class,
-        "confidence": confidence,
-        "probabilities": {
-            CLASS_NAMES[i]: float(predictions[i])
-            for i in range(len(CLASS_NAMES))
-        }
-    }
+    predicted_class = CLASS_NAMES[predicted_index]
+
+    confidence = predictions[predicted_index] * 100
+
+    print()
+    print("Prediction Results")
+    print("==================")
+
+    print("Class:", predicted_class)
+
+    print(
+        "Condition:",
+        CLASS_LABELS[predicted_class]
+    )
+
+    print(
+        f"Confidence: {confidence:.2f}%"
+    )
+
+    print()
+    print("All Class Probabilities")
+    print("=======================")
+
+    for index, class_name in enumerate(CLASS_NAMES):
+
+        probability = predictions[index] * 100
+
+        print(
+            f"{CLASS_LABELS[class_name]}: "
+            f"{probability:.2f}%"
+        )
+
+    # ========================================================
+    # GENERAL SKIN HEALTH ADVICE
+    # ========================================================
+
+    print()
+    print("=" * 60)
+    print("GENERAL SKIN HEALTH ADVICE")
+    print("=" * 60)
+
+    print(ADVICE[predicted_class])
+
+    print()
+    print("IMPORTANT:")
+    print(
+        "This AI result is not a medical diagnosis and should "
+        "not replace professional medical advice."
+    )
 
 
 if __name__ == "__main__":
-    print("CNN prediction module is ready.")
+
+    if len(sys.argv) < 2:
+
+        print()
+        print("Please provide an image path.")
+        print()
+        print("Example:")
+        print(
+            "python cnn/predict.py "
+            "path/to/image.jpg"
+        )
+
+        sys.exit()
+
+    image_path = sys.argv[1]
+
+    model = load_model()
+
+    predict_image(
+        model,
+        image_path
+    )
