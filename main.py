@@ -12,8 +12,9 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Load the CNN model once when Flask starts
-model = load_model()
+# Model starts as None so Render doesn't load TensorFlow
+# during Gunicorn startup.
+model = None
 
 
 # Home page
@@ -44,6 +45,8 @@ def how_it_works():
 @app.route("/predict", methods=["POST"])
 def predict():
 
+    global model
+
     if "image" not in request.files:
         return jsonify({"error": "No image was uploaded."}), 400
 
@@ -53,6 +56,7 @@ def predict():
         return jsonify({"error": "No image was selected."}), 400
 
     filename = secure_filename(image.filename)
+
     image_path = os.path.join(
         app.config["UPLOAD_FOLDER"],
         filename
@@ -61,6 +65,13 @@ def predict():
     image.save(image_path)
 
     try:
+
+        # Load model only when a prediction is requested
+        if model is None:
+            print("Loading CNN model...")
+            model = load_model()
+            print("CNN model loaded.")
+
         result = predict_image(model, image_path)
 
         return jsonify(result)
