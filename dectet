@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}NEBIR AI | Detect Skin{% endblock %}
+
+{% block content %}
+
+<section class="detect-page">
+
+    <div class="section-heading">
+        <p class="section-tag">NEBIR AI DETECTION</p>
+
+        <h1>Analyze Your Skin Image</h1>
+
+        <p>
+            Upload a skin image and our AI model will analyze it
+            across seven skin-disease categories.
+        </p>
+    </div>
+
+    <div class="upload-card">
+
+        <div class="upload-icon">
+            📷
+        </div>
+
+        <h2>Upload Skin Image</h2>
+
+        <p>
+            Choose an image from your device to begin analysis.
+        </p>
+
+        <input
+    type="file"
+    id="skinImage"
+    accept=".jpg,.jpeg,.png"
+    hidden
+>
+
+<label for="skinImage" class="btn btn-primary">
+    Choose Image
+</label>
+
+        <div id="preview-container">
+            <img id="preview" alt="Selected skin image">
+        </div>
+
+        <button
+            id="analyzeButton"
+            class="btn btn-primary"
+            type="button"
+        >
+            Analyze Image
+        </button>
+
+        <p class="upload-note">
+            Supported image formats: JPG, JPEG, PNG
+        </p>
+
+    </div>
+
+    <div class="disclaimer-box">
+
+        <div class="disclaimer-icon">!</div>
+
+        <div>
+            <h3>Important Medical Notice</h3>
+
+            <p>
+                NEBIR AI provides an AI-based prediction for
+                educational and research purposes. It is not a
+                medical diagnosis. Please consult a qualified
+                healthcare professional for medical advice.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const imageInput = document.getElementById("skinImage");
+const preview = document.getElementById("preview");
+const analyzeButton = document.getElementById("analyzeButton");
+
+imageInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (file) {
+
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            preview.src = event.target.result;
+            preview.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+});
+
+analyzeButton.addEventListener("click", function () {
+
+    if (!imageInput.files.length) {
+        alert("Please choose a skin image first.");
+        return;
+    }
+
+    alert("AI analysis will be connected next.");
+
+});
+
+</script>
+
+{% endblock %}
