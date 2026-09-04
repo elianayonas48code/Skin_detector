@@ -6,7 +6,9 @@
 
 <section class="detect-page">
 
+    <!-- Page Heading -->
     <div class="section-heading">
+
         <p class="section-tag">NEBIR AI DETECTION</p>
 
         <h1>Analyze Your Skin Image</h1>
@@ -15,8 +17,11 @@
             Upload a skin image and our AI model will analyze it
             across seven skin-disease categories.
         </p>
+
     </div>
 
+
+    <!-- Upload Card -->
     <div class="upload-card">
 
         <div class="upload-icon">
@@ -29,21 +34,36 @@
             Choose an image from your device to begin analysis.
         </p>
 
+
+        <!-- Hidden File Input -->
         <input
-    type="file"
-    id="skinImage"
-    accept=".jpg,.jpeg,.png"
-    hidden
->
+            type="file"
+            id="skinImage"
+            accept=".jpg,.jpeg,.png"
+            hidden
+        >
 
-<label for="skinImage" class="btn btn-primary">
-    Choose Image
-</label>
+        <!-- Custom Upload Button -->
+        <label
+            for="skinImage"
+            class="btn btn-primary"
+        >
+            Choose Image
+        </label>
 
+
+        <!-- Image Preview -->
         <div id="preview-container">
-            <img id="preview" alt="Selected skin image">
+
+            <img
+                id="preview"
+                alt="Selected skin image"
+            >
+
         </div>
 
+
+        <!-- Analyze Button -->
         <button
             id="analyzeButton"
             class="btn btn-primary"
@@ -52,17 +72,76 @@
             Analyze Image
         </button>
 
+
+        <!-- Loading Message -->
+        <p
+            id="loadingMessage"
+            style="display: none;"
+        >
+            Analyzing image...
+        </p>
+
+
+        <!-- Prediction Result -->
+        <div
+            id="result-container"
+            style="display: none;"
+        >
+
+            <h2>Prediction Result</h2>
+
+            <p>
+                <strong>Condition:</strong>
+                <span id="condition"></span>
+            </p>
+
+            <p>
+                <strong>Confidence:</strong>
+                <span id="confidence"></span>%
+            </p>
+
+            <div>
+
+                <h3>Class Probabilities</h3>
+
+                <div id="probabilities"></div>
+
+            </div>
+
+            <div>
+
+                <h3>General Skin Health Advice</h3>
+
+                <p id="advice"></p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Error Message -->
+        <p
+            id="errorMessage"
+            style="display: none;"
+        ></p>
+
+
         <p class="upload-note">
             Supported image formats: JPG, JPEG, PNG
         </p>
 
     </div>
 
+
+    <!-- Medical Disclaimer -->
     <div class="disclaimer-box">
 
-        <div class="disclaimer-icon">!</div>
+        <div class="disclaimer-icon">
+            !
+        </div>
 
         <div>
+
             <h3>Important Medical Notice</h3>
 
             <p>
@@ -71,48 +150,203 @@
                 medical diagnosis. Please consult a qualified
                 healthcare professional for medical advice.
             </p>
+
         </div>
 
     </div>
 
 </section>
 
+
 <script>
 
 const imageInput = document.getElementById("skinImage");
+
 const preview = document.getElementById("preview");
-const analyzeButton = document.getElementById("analyzeButton");
+
+const analyzeButton =
+    document.getElementById("analyzeButton");
+
+const loadingMessage =
+    document.getElementById("loadingMessage");
+
+const resultContainer =
+    document.getElementById("result-container");
+
+const errorMessage =
+    document.getElementById("errorMessage");
+
+const condition =
+    document.getElementById("condition");
+
+const confidence =
+    document.getElementById("confidence");
+
+const advice =
+    document.getElementById("advice");
+
+const probabilities =
+    document.getElementById("probabilities");
+
+
+// ============================================================
+// IMAGE SELECTION
+// ============================================================
 
 imageInput.addEventListener("change", function () {
 
     const file = this.files[0];
 
-    if (file) {
-
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
-            preview.src = event.target.result;
-            preview.style.display = "block";
-        };
-
-        reader.readAsDataURL(file);
-    }
-
-});
-
-analyzeButton.addEventListener("click", function () {
-
-    if (!imageInput.files.length) {
-        alert("Please choose a skin image first.");
+    if (!file) {
         return;
     }
 
-    alert("AI analysis will be connected next.");
+    // Clear previous messages/results
+    errorMessage.style.display = "none";
+    resultContainer.style.display = "none";
+
+    // Show image preview
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+
+        preview.src = event.target.result;
+
+        preview.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+// ============================================================
+// ANALYZE IMAGE
+// ============================================================
+
+analyzeButton.addEventListener("click", async function () {
+
+    // Make sure an image was selected
+    if (!imageInput.files.length) {
+
+        alert("Please choose a skin image first.");
+
+        return;
+    }
+
+
+    const file = imageInput.files[0];
+
+
+    // Create form data
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+
+    // Show loading
+    loadingMessage.style.display = "block";
+
+    resultContainer.style.display = "none";
+
+    errorMessage.style.display = "none";
+
+    analyzeButton.disabled = true;
+
+
+    try {
+
+        // Send image to Flask
+        const response = await fetch(
+            "/predict",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        // Check for Flask error
+        if (!response.ok) {
+
+            throw new Error(
+                data.error || "Prediction failed."
+            );
+
+        }
+
+
+        // ====================================================
+        // DISPLAY RESULT
+        // ====================================================
+
+        condition.textContent =
+            data.condition;
+
+        confidence.textContent =
+            data.confidence;
+
+
+        advice.textContent =
+            data.advice;
+
+
+        // Clear previous probabilities
+        probabilities.innerHTML = "";
+
+
+        // Display all class probabilities
+        for (
+            const [name, probability]
+            of Object.entries(data.probabilities)
+        ) {
+
+            const probabilityElement =
+                document.createElement("p");
+
+            probabilityElement.textContent =
+                `${name}: ${probability}%`;
+
+            probabilities.appendChild(
+                probabilityElement
+            );
+
+        }
+
+
+        // Show results
+        resultContainer.style.display = "block";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        errorMessage.textContent =
+            "Unable to analyze the image: "
+            + error.message;
+
+
+        errorMessage.style.display = "block";
+
+    }
+
+    finally {
+
+        loadingMessage.style.display = "none";
+
+        analyzeButton.disabled = false;
+
+    }
 
 });
 
 </script>
 
 {% endblock %}
-
