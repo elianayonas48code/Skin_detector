@@ -6,7 +6,9 @@ ham10000/
 # Python virtual environments
 .venv/
 .venv312/
-venv/
+__pycache__/
+uploads/
+*.zip
 
 # PyCharm settings
 .idea/
