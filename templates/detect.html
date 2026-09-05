@@ -8,7 +8,6 @@
 
     <!-- Page Heading -->
     <div class="section-heading">
-
         <p class="section-tag">NEBIR AI DETECTION</p>
 
         <h1>Analyze Your Skin Image</h1>
@@ -17,7 +16,6 @@
             Upload a skin image and our AI model will analyze it
             across seven skin-disease categories.
         </p>
-
     </div>
 
 
@@ -42,6 +40,7 @@
             accept=".jpg,.jpeg,.png"
             hidden
         >
+
 
         <!-- Custom Upload Button -->
         <label
@@ -100,6 +99,7 @@
                 <span id="confidence"></span>%
             </p>
 
+
             <div>
 
                 <h3>Class Probabilities</h3>
@@ -107,6 +107,7 @@
                 <div id="probabilities"></div>
 
             </div>
+
 
             <div>
 
@@ -160,9 +161,11 @@
 
 <script>
 
-const imageInput = document.getElementById("skinImage");
+const imageInput =
+    document.getElementById("skinImage");
 
-const preview = document.getElementById("preview");
+const preview =
+    document.getElementById("preview");
 
 const analyzeButton =
     document.getElementById("analyzeButton");
@@ -225,127 +228,188 @@ imageInput.addEventListener("change", function () {
 // ANALYZE IMAGE
 // ============================================================
 
-analyzeButton.addEventListener("click", async function () {
+analyzeButton.addEventListener(
+    "click",
+    async function () {
 
-    // Make sure an image was selected
-    if (!imageInput.files.length) {
+        // Make sure an image was selected
+        if (!imageInput.files.length) {
 
-        alert("Please choose a skin image first.");
+            alert("Please choose a skin image first.");
 
-        return;
-    }
+            return;
 
-
-    const file = imageInput.files[0];
-
-
-    // Create form data
-    const formData = new FormData();
-
-    formData.append("image", file);
+        }
 
 
-    // Show loading
-    loadingMessage.style.display = "block";
-
-    resultContainer.style.display = "none";
-
-    errorMessage.style.display = "none";
-
-    analyzeButton.disabled = true;
+        const file =
+            imageInput.files[0];
 
 
-    try {
+        // Create form data
+        const formData =
+            new FormData();
 
-        // Send image to Flask
-        const response = await fetch(
-            "/predict",
-            {
-                method: "POST",
-                body: formData
-            }
+        formData.append(
+            "image",
+            file
         );
 
 
-        const data = await response.json();
+        // Show loading
+        loadingMessage.style.display =
+            "block";
+
+        resultContainer.style.display =
+            "none";
+
+        errorMessage.style.display =
+            "none";
+
+        analyzeButton.disabled =
+            true;
 
 
-        // Check for Flask error
-        if (!response.ok) {
+        try {
 
-            throw new Error(
-                data.error || "Prediction failed."
-            );
+            // Send image to Flask
+            const response =
+                await fetch(
+                    "/predict",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            // Read the response as text first.
+            // This prevents JSON parsing errors when
+            // Render returns an empty or HTML error page.
+            const responseText =
+                await response.text();
+
+
+            let data;
+
+
+            // Try to convert the response to JSON
+            try {
+
+                data =
+                    JSON.parse(responseText);
+
+            }
+
+            catch (jsonError) {
+
+                throw new Error(
+                    `Server returned HTTP ${response.status}. ` +
+                    `The prediction server did not return valid JSON.`
+                );
+
+            }
+
+
+            // Check for Flask error
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    `Prediction failed (HTTP ${response.status}).`
+                );
+
+            }
+
+
+            // ====================================================
+            // DISPLAY RESULT
+            // ====================================================
+
+            condition.textContent =
+                data.condition || "Unknown";
+
+
+            confidence.textContent =
+                data.confidence ?? "N/A";
+
+
+            advice.textContent =
+                data.advice ||
+                "Please consult a qualified healthcare professional.";
+
+
+            // Clear previous probabilities
+            probabilities.innerHTML =
+                "";
+
+
+            // Display all class probabilities
+            if (
+                data.probabilities &&
+                typeof data.probabilities === "object"
+            ) {
+
+                for (
+                    const [name, probability]
+                    of Object.entries(data.probabilities)
+                ) {
+
+                    const probabilityElement =
+                        document.createElement("p");
+
+
+                    probabilityElement.textContent =
+                        `${name}: ${probability}%`;
+
+
+                    probabilities.appendChild(
+                        probabilityElement
+                    );
+
+                }
+
+            }
+
+
+            // Show results
+            resultContainer.style.display =
+                "block";
 
         }
 
 
-        // ====================================================
-        // DISPLAY RESULT
-        // ====================================================
+        catch (error) {
 
-        condition.textContent =
-            data.condition;
-
-        confidence.textContent =
-            data.confidence;
-
-
-        advice.textContent =
-            data.advice;
-
-
-        // Clear previous probabilities
-        probabilities.innerHTML = "";
-
-
-        // Display all class probabilities
-        for (
-            const [name, probability]
-            of Object.entries(data.probabilities)
-        ) {
-
-            const probabilityElement =
-                document.createElement("p");
-
-            probabilityElement.textContent =
-                `${name}: ${probability}%`;
-
-            probabilities.appendChild(
-                probabilityElement
+            console.error(
+                "Prediction error:",
+                error
             );
+
+
+            errorMessage.textContent =
+                "Unable to analyze the image: " +
+                error.message;
+
+
+            errorMessage.style.display =
+                "block";
 
         }
 
 
-        // Show results
-        resultContainer.style.display = "block";
+        finally {
+
+            loadingMessage.style.display =
+                "none";
+
+            analyzeButton.disabled =
+                false;
+
+        }
 
     }
-
-    catch (error) {
-
-        console.error(error);
-
-
-        errorMessage.textContent =
-            "Unable to analyze the image: "
-            + error.message;
-
-
-        errorMessage.style.display = "block";
-
-    }
-
-    finally {
-
-        loadingMessage.style.display = "none";
-
-        analyzeButton.disabled = false;
-
-    }
-
-});
+);
 
 </script>
 
